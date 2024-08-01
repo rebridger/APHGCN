@@ -90,7 +90,6 @@ def loadMatData(dataset="Cora"):
     gnd: Tensor
     '''
     print('Loading {} dataset...'.format(dataset))
-    # data = scio.loadmat("/data/piyy/project/pyy_gcn/pyy_gcn_2021.9.27/dataset/_mat/{}.mat".format(dataset))
     data = scio.loadmat("/data/huangy/dataset/{}.mat".format(dataset))
 
     features = data["X"]
