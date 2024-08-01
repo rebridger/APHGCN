@@ -158,19 +158,12 @@ def train(con_epoch):
         # MyGCN
         output, x, k = model(features, adj, adj_k, output_mlp)
 
-        # ablation experiences
-        # output, x, k = model(features, adj, adj_k)  # no_MLP
-        # output = model(features, adj, output_mlp)  # no_con
 
         loss1 = ucloss(x, k)  # contrastive loss
 
         loss_train = F.cross_entropy(output[idx_train], labels[idx_train])
         acc_train = accuracy(output[idx_train], labels[idx_train])
         loss =loss_mlp + args.lamda * loss1 + args.mu * loss_train  # total_loss
-
-        # ablation experiences
-        # loss = args.lamda * loss1 + args.mu * loss_train  # no_MLP
-        # loss = loss_mlp + args.mu * loss_train  # no_contrastive
 
         loss.backward()
         optimizer.step()
@@ -183,15 +176,11 @@ def train(con_epoch):
             # deactivates dropout during validation run.
             model.eval()
             model_MLP.eval()
-            # model.train()
-            # model_MLP.train()
-            # output = model(features, adj)
+
             output_mlp = model_MLP(features)
             output, x, k = model(features, adj, adj_k, output_mlp)
 
-            # ablation experiences
-            # output, x, k = model(features, adj, adj_k)  # no_MLP
-            # output = model(features, adj, output_mlp)  # no_contrastive
+
 
         loss_val = F.cross_entropy(output[idx_val], labels[idx_val])
         acc_val = accuracy(output[idx_val], labels[idx_val])
@@ -217,10 +206,7 @@ def train(con_epoch):
             f.write(f"dataset: {args.dataset}, lamda: {args.lamda}, mu: {args.mu}, , acc_test: {acc_test.item()}, "
                     f"best_acc_test: {best_test_acc}, macro_f1: {macro_f1.item()}, best_f1: {best_f1}\n")
             f.close()
-            # f = open("./Cora_result.txt", 'a')
-            # for item in acc_val_t:
-            #     f.write(item + "\n")
-            # f.close()
+
 
         print('Epoch: {:04d}'.format(epoch + 1),
               'ce_loss: {:.4f}'.format(loss_train.item()),
@@ -247,8 +233,6 @@ def test():
     loss1_test = ucloss(x, k)
     loss2_test = ucloss(k, output_mlp)
 
-    # contrastive_loss = ContrastiveLoss(features.shape[0])
-    # loss1_test = contrastive_loss(x, k).item()
     loss_test = F.cross_entropy(output[idx_train], labels[idx_train])
     loss_test = loss_mlp + args.mu * loss1_test + loss_test
     acc_test = accuracy(output[idx_test], labels[idx_test])
